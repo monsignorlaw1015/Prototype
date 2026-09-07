@@ -164,5 +164,9 @@ try {
     chrome.kill('SIGKILL');
     await Promise.race([new Promise(resolveExit => chrome.once('exit', resolveExit)), wait(1000)]);
   }
-  rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+  try {
+    rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+  } catch (error) {
+    console.warn(`! 临时浏览器目录稍后由系统清理：${error.code || error.message}`);
+  }
 }
