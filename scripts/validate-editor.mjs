@@ -158,8 +158,11 @@ try {
   process.exitCode = 1;
 } finally {
   try { ws?.close(); } catch {}
-  chrome.kill('SIGTERM');
+  if (chrome.exitCode === null) chrome.kill('SIGTERM');
   await Promise.race([new Promise(resolveExit => chrome.once('exit', resolveExit)), wait(1500)]);
-  if (!chrome.killed) chrome.kill('SIGKILL');
-  rmSync(profileDir, { recursive: true, force: true });
+  if (chrome.exitCode === null) {
+    chrome.kill('SIGKILL');
+    await Promise.race([new Promise(resolveExit => chrome.once('exit', resolveExit)), wait(1000)]);
+  }
+  rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
