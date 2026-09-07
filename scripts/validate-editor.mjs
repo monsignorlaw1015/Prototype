@@ -93,28 +93,37 @@ try {
   }
   const audit = await evaluate(`(() => ({
     launcher: !!document.querySelector('.proto-editor-launcher'),
-    sections: [...document.querySelectorAll('[id^="section-"]')].filter(section => section.querySelector('.macos-window')).map(section => ({
+    sections: [...document.querySelectorAll('[id^="section-"]')].filter(section => section.querySelector('.prototype-viewport, .macos-window, .mobile-frame')).map(section => ({
       id: section.id,
-      productBindings: section.querySelectorAll('.macos-window [data-proto-edit]').length,
+      device: section.querySelector('.prototype-viewport, .mobile-frame')?.dataset.device || (section.querySelector('.mobile-frame') ? 'mobile' : 'desktop'),
+      productBindings: section.querySelectorAll('.prototype-viewport [data-proto-edit], .macos-window [data-proto-edit], .mobile-frame [data-proto-edit]').length,
       prdBindings: section.querySelectorAll('.prd-panel [data-proto-edit]').length
     })),
-    excluded: { toc: document.querySelectorAll('.toc-sidebar [data-proto-edit-auto]').length, flow: document.querySelectorAll('.flow-overview [data-proto-edit-auto]').length }
+    excluded: { toc: document.querySelectorAll('.toc-sidebar [data-proto-edit-auto]').length, flow: document.querySelectorAll('.flow-overview [data-proto-edit-auto]').length },
+    mobileFrames: [...document.querySelectorAll('.mobile-frame')].map(frame => ({
+      width: Math.round(frame.getBoundingClientRect().width),
+      height: Math.round(frame.getBoundingClientRect().height),
+      overflowX: (frame.querySelector('.mobile-screen') || frame).scrollWidth > (frame.querySelector('.mobile-screen') || frame).clientWidth + 1
+    }))
   }))()`);
   const failures = [];
   if (!audit.launcher) failures.push('缺少【编辑文案】入口');
   audit.sections.filter(section => section.productBindings === 0).forEach(section => failures.push(`${section.id} 产品界面无可编辑文案`));
   audit.sections.filter(section => section.prdBindings === 0).forEach(section => failures.push(`${section.id} 功能说明无可编辑文案`));
   Object.entries(audit.excluded).filter(([, count]) => count > 0).forEach(([area, count]) => failures.push(`${area} 只读区误绑定 ${count} 处`));
-  if (audit.sections.length === 0) failures.push('未发现包含 .macos-window 的 section');
+  audit.mobileFrames.filter(frame => frame.width !== 390 || frame.height !== 844).forEach(frame => failures.push(`Mobile 视口尺寸错误 ${frame.width}×${frame.height}，应为 390×844`));
+  audit.mobileFrames.filter(frame => frame.overflowX).forEach(() => failures.push('Mobile 视口存在横向溢出'));
+  if (audit.sections.length === 0) failures.push('未发现包含产品视口的 section');
   if (failures.length) throw new Error(failures.join('；'));
 
   const editTargets = await evaluate(`(() => {
     document.querySelector('.proto-editor-launcher').click();
     const selectors = {
-      normal: '.macos-window [data-proto-edit]:not(.form-dialog [data-proto-edit]):not(.env-drawer [data-proto-edit]):not([role="dialog"] [data-proto-edit])',
+      normal: '.prototype-viewport [data-proto-edit]:not(.form-dialog [data-proto-edit]):not(.env-drawer [data-proto-edit]):not(.mobile-sheet [data-proto-edit]):not([role="dialog"] [data-proto-edit]), .macos-window [data-proto-edit]:not(.form-dialog [data-proto-edit]):not(.env-drawer [data-proto-edit]):not([role="dialog"] [data-proto-edit]), .mobile-frame [data-proto-edit]:not(.mobile-sheet [data-proto-edit]):not([role="dialog"] [data-proto-edit])',
       prd: '.prd-panel [data-proto-edit]',
-      modal: '.form-dialog [data-proto-edit], [role="dialog"] [data-proto-edit]',
-      drawer: '.env-drawer [data-proto-edit], .drawer-panel [data-proto-edit]'
+      modal: '.form-dialog [data-proto-edit], [role="dialog"]:not(.mobile-sheet) [data-proto-edit]',
+      drawer: '.env-drawer [data-proto-edit], .drawer-panel [data-proto-edit]',
+      sheet: '.mobile-sheet [data-proto-edit]'
     };
     return Object.fromEntries(Object.entries(selectors).map(([type, selector]) => {
       const el = document.querySelector(selector);
@@ -142,7 +151,7 @@ try {
 
   const totalBindings = audit.sections.reduce((sum, section) => sum + section.productBindings + section.prdBindings, 0);
   console.log(`✓ 文案编辑验收通过：${audit.sections.length} 个页面，${totalBindings} 个绑定`);
-  audit.sections.forEach(section => console.log(`  ${section.id}: 产品 ${section.productBindings}，功能说明 ${section.prdBindings}`));
+  audit.sections.forEach(section => console.log(`  ${section.id} [${section.device}]: 产品 ${section.productBindings}，功能说明 ${section.prdBindings}`));
   console.log(`  交互回归：${Object.entries(editTargets).filter(([, target]) => target).map(([type]) => type).join(', ')}`);
 } catch (error) {
   console.error(`✗ 文案编辑验收失败：${error.message}`);

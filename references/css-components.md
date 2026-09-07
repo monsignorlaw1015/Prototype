@@ -5,7 +5,7 @@
 >
 > AI 生成原型 / 写 PRD 时：通过本表选用类名，直接说「展示主按钮，应用 `.btn-primary` 风格」，不要在 PRD 文档中复述颜色 hex / 圆角 px 等具体值。
 
-适用范围：PC · macOS 系列。Mobile 系列后续以独立文件扩展（如 `css-components-mobile.md`），不混入本文件。
+适用范围：Desktop。Mobile 使用独立的 `css-components-mobile.md`，不要混用两套设备组件。
 
 ## 通用组件原语（在 `components.html` 展示）
 

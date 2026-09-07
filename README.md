@@ -12,10 +12,11 @@
 - 从 PRD 提取主流程、页面状态、异常和权限边界
 - PRD 说明与原型组件双向高亮
 - 浏览器内编辑文案，刷新后保留，并可导出自包含评审版
+- Desktop 与 Mobile 双模式，统一主题与独立设备骨架
 - 统一主题与组件资产，支持替换 tweakcn 主题
 - 真实浏览器验收文案覆盖、持久化和只读区域
 
-当前只覆盖 PC / macOS 风格的桌面端产品原型，不支持移动端。
+当前覆盖 PC/macOS 风格桌面端，以及 390×844 通用 App/H5 移动端。小程序、iOS 原生和 Android Material 专属视觉暂不模拟。
 
 ## 前置条件
 
@@ -57,7 +58,7 @@ git clone https://github.com/monsignorlaw1015/Prototype.git ~/.claude/skills/hig
 每个页面状态对应一组原型和功能说明：
 
 ```text
-页面索引 | 1460 × 910 产品原型 | 功能概览
+页面索引 | Desktop 1460×910 或 Mobile 390×844 | 功能概览
 ```
 
 最终输出为自包含 HTML 文件，可直接双击打开。主题、组件样式、高亮和文案编辑运行时由脚本注入，无需随交付文件附带额外 CSS 或 JavaScript。
@@ -76,6 +77,8 @@ git clone https://github.com/monsignorlaw1015/Prototype.git ~/.claude/skills/hig
 ```bash
 ./assets/inject-assets.mjs ./assets/example.html
 ./scripts/validate-editor.mjs ./assets/example.html
+./assets/inject-assets.mjs ./assets/example-mobile.html
+./scripts/validate-editor.mjs ./assets/example-mobile.html
 ```
 
 浏览器打开 [`assets/components.html`](assets/components.html) 可查看组件及 token。详细结构和业务转译规则位于 [`references/`](references/)。
@@ -95,6 +98,8 @@ Prototype/
 ├── SKILL.md
 ├── agents/openai.yaml
 ├── assets/
+│   ├── mobile.css
+│   ├── example-mobile.html
 ├── references/
 ├── scripts/
 └── evals/evals.json

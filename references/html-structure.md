@@ -1,6 +1,6 @@
 # HTML 页面骨架
 
-> **适用范围**：PC · macOS 系列。Mobile 系列后续以独立文件扩展（如 `html-structure-mobile.md`），不混入本文件。
+> **适用范围**：Desktop。Mobile 使用独立的 `html-structure-mobile.md`，不要混用两套设备外壳。
 
 所有原型 HTML 使用统一骨架，复制此模板后按需填入。
 
@@ -84,7 +84,7 @@
   <div class="section-label">{名称}-01</div>
   <div class="proto-with-prd">
 
-    <div class="macos-window">
+    <div class="prototype-viewport macos-window" data-device="desktop">
       <div class="macos-titlebar">
         <div class="macos-dot red"></div>
         <div class="macos-dot yellow"></div>

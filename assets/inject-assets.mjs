@@ -8,9 +8,10 @@
  *   <style> ...theme.css 注入内容... </style>
  *   <!-- @proto-gen:theme:end -->
  *
- * 支持四个块（theme / editor 必备）：
+ * 支持五个块（theme / editor 必备，mobile 仅移动端使用）：
  *   theme     → assets/theme.css        （主题 token，注入为 <style>）
  *   shared    → assets/shared.css       （通用组件类骨架，注入为 <style>）
+ *   mobile    → assets/mobile.css       （移动端外壳与组件，注入为 <style>）
  *   highlight → assets/prd-highlight.js （PRD↔原型 hover 联动，注入为 <script>）
  *   editor    → assets/prototype-editor.js（通用文案编辑与评审版导出）
  *
@@ -34,6 +35,7 @@ const assetsDir = dirname(fileURLToPath(import.meta.url));
 const BLOCKS = [
   { name: 'theme',     assetFile: 'theme.css',        tag: 'style'  },
   { name: 'shared',    assetFile: 'shared.css',       tag: 'style'  },
+  { name: 'mobile',    assetFile: 'mobile.css',       tag: 'style'  },
   { name: 'highlight', assetFile: 'prd-highlight.js', tag: 'script' },
   { name: 'editor',    assetFile: 'prototype-editor.js', tag: 'script' },
 ];

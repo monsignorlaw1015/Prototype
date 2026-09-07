@@ -15,6 +15,18 @@
     },
     {
       "id": 3,
+      "prompt": "使用 $high-fidelity-prototype，根据 docs/mobile-member-prd.md 生成移动端原型。",
+      "expected_output": "生成带 mobile-frame、mobile-navbar 和 PRD 对应状态的 390×844 移动端原型；不出现 app-sidebar、macos-window 或依赖 hover 的关键操作；Mobile 浏览器验收通过。",
+      "files": ["docs/mobile-member-prd.md"]
+    },
+    {
+      "id": 4,
+      "prompt": "使用 $high-fidelity-prototype，根据 docs/merchant-prd.md 同时生成总部后台和门店 App 原型。",
+      "expected_output": "分别输出 merchant-desktop.html 与 merchant-mobile.html；两端共享 PRD 事实但不混用设备外壳；两个文件分别通过验收。",
+      "files": ["docs/merchant-prd.md"]
+    },
+    {
+      "id": 5,
       "prompt": "使用 $high-fidelity-prototype 做一个通知偏好设置原型。",
       "expected_output": "因未提供 PRD Markdown 路径而停止生成，并明确要求用户提供 PRD；不得自行补造页面和业务规则。",
       "files": []

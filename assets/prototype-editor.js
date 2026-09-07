@@ -13,7 +13,7 @@
   let editing = false;
   let dirty = false;
 
-  const autoScopeSelector = '.macos-window, .prd-panel';
+  const autoScopeSelector = '.prototype-viewport, .macos-window, .mobile-frame, .prd-panel';
   const autoExcludeSelector = [
     '.proto-nav', '.toc-sidebar', '.section-label', '.flow-overview',
     '[data-proto-editor-ui]', 'script', 'style', 'svg', 'path', 'defs'

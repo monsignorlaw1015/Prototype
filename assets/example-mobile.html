@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>proto-gen 示例 · macOS 窗口布局</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Prototype Mobile 示例</title>
 <!-- @proto-gen:theme:start -->
 <style>
 /*
@@ -927,6 +927,59 @@ li[data-target].is-highlight {
 .channel-card.is-bullet-active .channel-actions { display: flex; }
 </style>
 <!-- @proto-gen:shared:end -->
+<!-- @proto-gen:mobile:start -->
+<style>
+/* Mobile V1: generic App / H5 review prototype, 390 × 844 baseline. */
+.mobile-frame {
+  width: 390px;
+  height: 844px;
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 8px solid color-mix(in oklch, var(--foreground) 92%, black);
+  border-radius: 46px;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 24px 70px rgb(15 23 42 / .22), inset 0 0 0 1px rgb(255 255 255 / .18);
+}
+.mobile-screen { height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; border-radius: 38px; background: var(--background); }
+.mobile-statusbar { height: 34px; padding: 10px 18px 0; display: flex; align-items: flex-start; justify-content: space-between; flex: 0 0 auto; font: 600 12px/1 var(--font-sans); }
+.mobile-status-icons { display: inline-flex; gap: 5px; align-items: center; font-size: 10px; }
+.mobile-navbar { min-height: 52px; padding: 0 16px; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; flex: 0 0 auto; border-bottom: 1px solid var(--border); background: color-mix(in oklch, var(--background) 94%, transparent); }
+.mobile-navbar__title { text-align: center; font: 650 17px/1.2 var(--font-sans); letter-spacing: -.02em; }
+.mobile-nav-action { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: var(--radius-btn); background: transparent; color: var(--foreground); }
+.mobile-nav-action:last-child { justify-self: end; color: var(--primary); font-size: 14px; font-weight: 600; }
+.mobile-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 16px 16px 96px; background: var(--muted); scrollbar-width: none; }
+.mobile-content::-webkit-scrollbar { display: none; }
+.mobile-tabbar { position: absolute; z-index: 5; left: 0; right: 0; bottom: 0; min-height: 74px; padding: 8px 12px calc(10px + env(safe-area-inset-bottom)); display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: 1px solid var(--border); background: color-mix(in oklch, var(--background) 94%, transparent); backdrop-filter: blur(18px); }
+.mobile-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-3); font-size: 10px; }
+.mobile-tab svg, .mobile-tab i { width: 21px; height: 21px; }
+.mobile-tab.active { color: var(--primary); font-weight: 600; }
+.mobile-card { padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--card); box-shadow: 0 2px 10px rgb(15 23 42 / .04); }
+.mobile-card + .mobile-card { margin-top: 10px; }
+.mobile-list-row { min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.mobile-list-row:last-child { border-bottom: 0; }
+.mobile-list-main { flex: 1; min-width: 0; }
+.mobile-list-title { font-size: 14px; font-weight: 600; line-height: 1.35; }
+.mobile-list-meta { margin-top: 3px; color: var(--text-2); font-size: 12px; line-height: 1.4; }
+.mobile-search { height: 40px; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 0 12px; border-radius: var(--radius-btn); background: var(--background); color: var(--text-3); }
+.mobile-search input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: var(--foreground); font: 14px var(--font-sans); }
+.mobile-bottom-action { position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: var(--background); }
+.mobile-bottom-action .btn { width: 100%; min-height: 46px; font-size: 15px; }
+.mobile-overlay { position: absolute; z-index: 20; inset: 0; background: rgb(15 23 42 / .42); }
+.mobile-sheet { position: absolute; z-index: 21; left: 0; right: 0; bottom: 0; max-height: 78%; padding: 10px 20px calc(20px + env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 24px 24px 0 0; background: var(--background); box-shadow: 0 -18px 50px rgb(15 23 42 / .18); }
+.mobile-sheet__handle { width: 38px; height: 4px; margin: 0 auto 18px; border-radius: 99px; background: var(--border-2); }
+.mobile-sheet__title { font: 700 19px/1.25 var(--font-sans); letter-spacing: -.02em; }
+.mobile-sheet__desc { margin: 6px 0 18px; color: var(--text-2); font-size: 13px; line-height: 1.5; }
+.mobile-toast { position: absolute; z-index: 30; left: 50%; bottom: 92px; max-width: calc(100% - 40px); padding: 10px 14px; transform: translateX(-50%); border-radius: var(--radius-btn); background: var(--foreground); color: var(--background); font-size: 13px; white-space: nowrap; }
+.mobile-empty { min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; color: var(--text-2); }
+.mobile-empty__title { margin-top: 12px; color: var(--foreground); font-size: 16px; font-weight: 650; }
+.mobile-empty__desc { margin-top: 6px; font-size: 13px; line-height: 1.5; }
+.proto-with-prd:has(.mobile-frame) { align-items: flex-start; }
+.proto-stack:has(.mobile-frame) { min-width: 790px; }
+.proto-with-prd:has(.mobile-frame) .prd-panel-wrap { height: 844px; }
+</style>
+<!-- @proto-gen:mobile:end -->
 <!-- @proto-gen:highlight:start -->
 <script>
 /**
@@ -1221,318 +1274,59 @@ li[data-target].is-highlight {
 })();
 </script>
 <!-- @proto-gen:editor:end -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
-
-<!-- 三栏布局：左 TOC + 中原型纵列 + 右 PRD（PRD 在每个 proto-with-prd 内） -->
 <div class="proto-layout">
-
-  <!-- 左侧页面索引（toc）：sticky 卡片 -->
   <nav class="toc-sidebar">
     <div class="toc-title">页面导航</div>
-    <a class="toc-item" href="#section-home"><span class="toc-dot"></span>Home-01</a>
-    <a class="toc-item" href="#section-modal"><span class="toc-dot"></span>Home-02</a>
+    <a class="toc-item active" href="#section-mobile-home"><span class="toc-dot"></span>任务-01</a>
+    <a class="toc-item" href="#section-mobile-filter"><span class="toc-dot"></span>任务-01-筛选</a>
   </nav>
-
-  <!-- 原型纵列：每个 section 一个 proto-stack（section-label + proto-with-prd） -->
   <div class="sections-col">
-
-<!-- Section 1：主页（左侧边栏 + 顶部工具栏 + 内容区 三件套） -->
-<div id="section-home" class="proto-stack">
-  <div class="section-label">Home-01</div>
-  <div class="proto-with-prd">
-
-    <div class="prototype-viewport macos-window" data-device="desktop">
-      <div class="macos-titlebar">
-        <div class="macos-dot red"></div>
-        <div class="macos-dot yellow"></div>
-        <div class="macos-dot green"></div>
-        <div class="macos-title">Demo App — Dashboard</div>
+    <section id="section-mobile-home" class="proto-stack">
+      <div class="section-label">任务-01</div>
+      <div class="proto-with-prd">
+        <div class="prototype-viewport mobile-frame" data-device="mobile">
+          <div class="mobile-screen">
+            <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons">● ◒ ▰</span></div>
+            <header class="mobile-navbar">
+              <span></span><h1 class="mobile-navbar__title">我的任务</h1><button class="mobile-nav-action">筛选</button>
+            </header>
+            <main class="mobile-content">
+              <label class="mobile-search">⌕<input placeholder="搜索任务标题" /></label>
+              <article class="mobile-card">
+                <div class="mobile-list-row"><div class="mobile-list-main"><div class="mobile-list-title">确认会员中心交互稿</div><div class="mobile-list-meta">今天 18:00 截止</div></div><span class="badge badge-warn">进行中</span></div>
+                <div class="mobile-list-row"><div class="mobile-list-main"><div class="mobile-list-title">整理技术评审反馈</div><div class="mobile-list-meta">明天 12:00 截止</div></div><span class="badge badge-default">待开始</span></div>
+                <div class="mobile-list-row"><div class="mobile-list-main"><div class="mobile-list-title">发布版本说明</div><div class="mobile-list-meta">9 月 10 日截止</div></div><span class="badge badge-success">已完成</span></div>
+              </article>
+            </main>
+            <nav class="mobile-tabbar"><div class="mobile-tab active">▣<span>任务</span></div><div class="mobile-tab">◷<span>日历</span></div><div class="mobile-tab">◎<span>我的</span></div></nav>
+          </div>
+        </div>
+        <div class="prd-panel-wrap"><aside class="prd-panel"><div class="prd-panel__title">功能概览</div><div class="prd-panel__body"><div class="prd-section"><div class="prd-section__title">任务-01：任务列表</div><ul><li>展示搜索框和任务列表，任务包含标题、截止时间和状态</li><li>点击「筛选」打开底部筛选面板</li><li>底部导航固定展示任务、日历和我的三个入口</li><li>列表内容在手机视口内部滚动，不被底部导航遮挡</li></ul></div></div></aside></div>
       </div>
-      <div class="macos-body">
-
-        <!-- ① 左侧边栏 -->
-        <div class="app-sidebar">
-          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
-            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="zap" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
-            </div>
-            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">Demo App</span>
-          </div>
-          <div class="sidebar-section-header" style="padding-top:4px;">主要功能</div>
-          <div class="sidebar-item active"><i data-lucide="home" class="nav-icon"></i>首页</div>
-          <div class="sidebar-item"><i data-lucide="layout-grid" class="nav-icon"></i>工作台</div>
-          <div class="sidebar-item"><i data-lucide="folder" class="nav-icon"></i>资源库</div>
-          <div class="sidebar-item"><i data-lucide="bar-chart-3" class="nav-icon"></i>数据统计</div>
-          <div class="sidebar-item"><i data-lucide="settings" class="nav-icon"></i>设置</div>
-          <div class="sidebar-divider"></div>
-          <div class="sidebar-section-header">收藏夹</div>
-          <div class="sidebar-apps">
-            <div class="sidebar-item"><span class="nav-icon" style="background:linear-gradient(135deg,var(--primary),color-mix(in oklch,var(--primary) 70%,white));color:var(--primary-foreground);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;">A</span>项目 Alpha</div>
-            <div class="sidebar-item"><span class="nav-icon" style="background:linear-gradient(135deg,var(--success),color-mix(in oklch,var(--success) 70%,white));color:var(--primary-foreground);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;">B</span>项目 Beta</div>
-            <div class="sidebar-item"><span class="nav-icon" style="background:linear-gradient(135deg,var(--warning),color-mix(in oklch,var(--warning) 70%,white));color:var(--primary-foreground);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;">G</span>项目 Gamma</div>
+    </section>
+    <section id="section-mobile-filter" class="proto-stack">
+      <div class="section-label">任务-01-筛选</div>
+      <div class="proto-with-prd">
+        <div class="prototype-viewport mobile-frame" data-device="mobile">
+          <div class="mobile-screen">
+            <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons">● ◒ ▰</span></div>
+            <header class="mobile-navbar"><span></span><h1 class="mobile-navbar__title">我的任务</h1><button class="mobile-nav-action">筛选</button></header>
+            <main class="mobile-content"><article class="mobile-card"><div class="mobile-list-title">任务列表</div><div class="mobile-list-meta">底层页面保持原状态</div></article></main>
+            <div class="mobile-overlay"></div>
+            <section class="mobile-sheet" role="dialog" aria-label="筛选任务">
+              <div class="mobile-sheet__handle"></div><div class="mobile-sheet__title">筛选任务</div><div class="mobile-sheet__desc">选择需要查看的任务状态</div>
+              <div class="mobile-list-row"><div class="mobile-list-main"><div class="mobile-list-title">进行中</div></div><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></div>
+              <div class="mobile-list-row"><div class="mobile-list-main"><div class="mobile-list-title">待开始</div></div><label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label></div>
+              <div style="display:flex;gap:10px;margin-top:18px"><button class="btn btn-secondary" style="flex:1">重置</button><button class="btn btn-primary" style="flex:1">查看结果</button></div>
+            </section>
           </div>
         </div>
-
-        <!-- ② 顶部工具栏 -->
-        <div class="win-chrome-bar">
-          <div class="win-chrome-drag"></div>
-          <div class="win-chrome-actions">
-            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
-            <div class="win-credits"><i data-lucide="coins" class="win-chrome-icon"></i><span>1,000 积分</span></div>
-            <div class="win-avatar-chip"><span class="win-avatar">U</span><span class="badge-free">FREE</span></div>
-            <button class="win-chrome-btn" title="菜单"><i data-lucide="menu" class="win-chrome-icon"></i></button>
-          </div>
-        </div>
-
-        <!-- ③ 内容区 -->
-        <div class="app-main">
-          <!-- 页头 -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-            <div>
-              <div style="font-family:var(--font-sans);font-size:20px;font-weight:700;">Dashboard</div>
-              <div style="color:var(--text-2);font-size:12px;margin-top:2px;">欢迎回来，今天有 3 项任务待处理</div>
-            </div>
-            <button class="btn btn-primary"><i data-lucide="plus" style="width:14px;height:14px;"></i>新建项目</button>
-          </div>
-
-          <!-- 统计卡片 -->
-          <div class="grid-3" style="margin-bottom:18px;">
-            <div class="info-card">
-              <div style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;">活跃项目</div>
-              <div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">12</div>
-              <div style="color:var(--success);font-size:11px;margin-top:4px;">↑ 较上周 +2</div>
-            </div>
-            <div class="info-card">
-              <div style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;">待处理任务</div>
-              <div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">3</div>
-              <div style="color:var(--text-2);font-size:11px;margin-top:4px;">需在本周完成</div>
-            </div>
-            <div class="info-card">
-              <div style="color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;">本月用量</div>
-              <div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">67%</div>
-              <div class="progress-bar" style="margin-top:6px;">
-                <div class="progress-fill indigo" style="width:67%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 列表 -->
-          <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em;">最近活动</div>
-          <div class="info-card" style="padding:0;">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span class="nav-icon" style="width:24px;height:24px;background:linear-gradient(135deg,var(--primary),color-mix(in oklch,var(--primary) 70%,white));color:var(--primary-foreground);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-chip);">A</span>
-                <div>
-                  <div style="font-size:13px;font-weight:500;">项目 Alpha 已部署</div>
-                  <div style="color:var(--text-3);font-size:11px;margin-top:2px;">10 分钟前</div>
-                </div>
-              </div>
-              <span class="badge badge-success">成功</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span class="nav-icon" style="width:24px;height:24px;background:linear-gradient(135deg,var(--success),color-mix(in oklch,var(--success) 70%,white));color:var(--primary-foreground);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-chip);">B</span>
-                <div>
-                  <div style="font-size:13px;font-weight:500;">项目 Beta 配置已更新</div>
-                  <div style="color:var(--text-3);font-size:11px;margin-top:2px;">1 小时前</div>
-                </div>
-              </div>
-              <span class="badge badge-info">已同步</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span class="nav-icon" style="width:24px;height:24px;background:linear-gradient(135deg,var(--warning),color-mix(in oklch,var(--warning) 70%,white));color:var(--primary-foreground);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-chip);">G</span>
-                <div>
-                  <div style="font-size:13px;font-weight:500;">项目 Gamma 待审核</div>
-                  <div style="color:var(--text-3);font-size:11px;margin-top:2px;">3 小时前</div>
-                </div>
-              </div>
-              <span class="badge badge-warn">待处理</span>
-            </div>
-          </div>
-        </div>
+        <div class="prd-panel-wrap"><aside class="prd-panel"><div class="prd-panel__title">功能概览</div><div class="prd-panel__body"><div class="prd-section"><div class="prd-section__title">任务-01-筛选：Bottom Sheet</div><ul><li>筛选面板从底部弹出，底层页面增加遮罩并禁止操作</li><li>用户可切换任务状态，点击「查看结果」应用筛选并关闭面板</li><li>点击「重置」恢复 PRD 定义的默认筛选条件</li><li>面板底部预留设备安全区</li></ul></div></div></aside></div>
       </div>
-    </div>
-
-    <!-- 旁注 PRD 面板 -->
-    <div class="prd-panel-wrap">
-      <aside class="prd-panel">
-        <div class="prd-panel__title">功能概览</div>
-        <div class="prd-panel__body">
-          <div class="prd-section">
-            <div class="prd-section__title">Home-01：主页布局示意</div>
-            <ul>
-              <li>展示 macOS 窗口三件套结构：左侧 app-sidebar + 顶部 win-chrome-bar + 内容区 app-main</li>
-              <li>展示 app-sidebar，含品牌区、「主要功能」分组（5 项）、「收藏夹」分组（3 项），当前页「首页」高亮</li>
-              <li>展示 win-chrome-bar，含拖动区 + 帮助按钮 + 积分 chip + 用户头像 + 菜单按钮</li>
-              <li>展示页头「Dashboard」标题（display 字体）+ 副文案 + 「新建项目」主色按钮</li>
-              <li>展示 3 张统计卡片（grid-3）：活跃项目、待处理任务、本月用量，含数字、变化趋势、进度条</li>
-              <li>展示「最近活动」列表（info-card），每行含品牌图标、标题、时间、状态 badge</li>
-              <li>状态 badge 三色：成功（绿）、已同步（蓝）、待处理（黄）</li>
-            </ul>
-          </div>
-        </div>
-      </aside>
-    </div>
-
+    </section>
   </div>
 </div>
-
-<!-- Section 2：弹窗叠加态 -->
-<div id="section-modal" class="proto-stack">
-  <div class="section-label">Home-02</div>
-  <div class="proto-with-prd">
-
-    <div class="prototype-viewport macos-window" data-device="desktop">
-      <div class="macos-titlebar">
-        <div class="macos-dot red"></div>
-        <div class="macos-dot yellow"></div>
-        <div class="macos-dot green"></div>
-        <div class="macos-title">Demo App — Dashboard · 新建项目</div>
-      </div>
-      <div class="macos-body" style="position:relative;">
-
-        <!-- 左侧边栏（保持原状） -->
-        <div class="app-sidebar">
-          <div style="padding:4px 14px 12px;display:flex;align-items:center;gap:8px;">
-            <div style="width:22px;height:22px;border-radius:var(--radius-chip);background:var(--primary);display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="zap" style="width:12px;height:12px;color:var(--primary-foreground);stroke-width:2.5;"></i>
-            </div>
-            <span style="font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:-0.02em;">Demo App</span>
-          </div>
-          <div class="sidebar-section-header" style="padding-top:4px;">主要功能</div>
-          <div class="sidebar-item active"><i data-lucide="home" class="nav-icon"></i>首页</div>
-          <div class="sidebar-item"><i data-lucide="layout-grid" class="nav-icon"></i>工作台</div>
-          <div class="sidebar-item"><i data-lucide="folder" class="nav-icon"></i>资源库</div>
-          <div class="sidebar-item"><i data-lucide="bar-chart-3" class="nav-icon"></i>数据统计</div>
-          <div class="sidebar-item"><i data-lucide="settings" class="nav-icon"></i>设置</div>
-        </div>
-
-        <!-- 顶部工具栏（保持原状） -->
-        <div class="win-chrome-bar">
-          <div class="win-chrome-drag"></div>
-          <div class="win-chrome-actions">
-            <button class="win-chrome-btn" title="帮助"><i data-lucide="help-circle" class="win-chrome-icon"></i></button>
-            <div class="win-credits"><i data-lucide="coins" class="win-chrome-icon"></i><span>1,000 积分</span></div>
-            <div class="win-avatar-chip"><span class="win-avatar">U</span><span class="badge-free">FREE</span></div>
-            <button class="win-chrome-btn" title="菜单"><i data-lucide="menu" class="win-chrome-icon"></i></button>
-          </div>
-        </div>
-
-        <!-- 主区 dimmed -->
-        <div class="app-main" style="pointer-events:none;filter:brightness(0.97);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-            <div>
-              <div style="font-family:var(--font-sans);font-size:20px;font-weight:700;">Dashboard</div>
-              <div style="color:var(--text-2);font-size:12px;margin-top:2px;">欢迎回来，今天有 3 项任务待处理</div>
-            </div>
-            <button class="btn btn-primary"><i data-lucide="plus" style="width:14px;height:14px;"></i>新建项目</button>
-          </div>
-          <div class="grid-3">
-            <div class="info-card"><div style="color:var(--text-2);font-size:11px;text-transform:uppercase;">活跃项目</div><div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">12</div></div>
-            <div class="info-card"><div style="color:var(--text-2);font-size:11px;text-transform:uppercase;">待处理任务</div><div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">3</div></div>
-            <div class="info-card"><div style="color:var(--text-2);font-size:11px;text-transform:uppercase;">本月用量</div><div style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin-top:6px;">67%</div></div>
-          </div>
-        </div>
-
-        <!-- 遮罩 -->
-        <div style="position:absolute;inset:0;background:color-mix(in oklch,var(--foreground) 25%,transparent);z-index:10;"></div>
-
-        <!-- 弹窗 -->
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:11;">
-          <div class="form-dialog">
-            <button class="modal-close-x"><i data-lucide="x"></i></button>
-            <div class="form-dialog-title">新建项目</div>
-
-            <div class="form-group">
-              <label class="form-label">项目名称</label>
-              <input class="form-input" placeholder="给项目起个名字" value="项目 Delta" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">描述</label>
-              <textarea class="form-textarea" rows="3" placeholder="简单描述项目目标">用于演示 proto-gen 的弹窗叠加态规范</textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">类型</label>
-              <div class="form-combobox">
-                <input class="form-input" value="标准项目" readonly />
-                <button class="form-chevron"><i data-lucide="chevron-down"></i></button>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button class="btn btn-ghost">取消</button>
-              <button class="btn btn-primary">创建</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 旁注 PRD 面板 -->
-    <div class="prd-panel-wrap">
-      <aside class="prd-panel">
-        <div class="prd-panel__title">功能概览</div>
-        <div class="prd-panel__body">
-          <div class="prd-section">
-            <div class="prd-section__title">Home-02：新建项目弹窗叠加态</div>
-            <ul>
-              <li>底层为 Home-01 失活态（暗化 + 点击穿透禁用）</li>
-              <li>展示半透明遮罩覆盖主区</li>
-              <li>展示居中弹窗 form-dialog，右上角有「X」关闭按钮（modal-close-x）</li>
-              <li>展示弹窗标题「新建项目」</li>
-              <li>展示三个表单字段：项目名称（input）、描述（textarea）、类型（combobox 下拉）</li>
-              <li>展示底部操作区：「取消」（ghost）+ 「创建」（主色实心）按钮</li>
-              <li>点击遮罩、X 或取消按钮关闭弹窗，回到 Home-01</li>
-            </ul>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-  </div>
-</div>
-
-  </div><!-- end .sections-col -->
-</div><!-- end .proto-layout -->
-
-<script>
-  if (window.lucide) lucide.createIcons();
-
-  /* TOC 滚动高亮 */
-  (function() {
-    var sectionMap = {
-      'section-home': 'Home-01',
-      'section-modal': 'Home-02'
-    };
-    var tocItems = document.querySelectorAll('.toc-item');
-    var ticking = false;
-    window.addEventListener('scroll', function() {
-      if (!ticking) {
-        requestAnimationFrame(function() {
-          var scrollPos = window.scrollY + 120;
-          var currentId = null;
-          var ids = Object.keys(sectionMap);
-          for (var i = ids.length - 1; i >= 0; i--) {
-            var el = document.getElementById(ids[i]);
-            if (el && el.offsetTop <= scrollPos) { currentId = ids[i]; break; }
-          }
-          tocItems.forEach(function(item) {
-            item.classList.remove('active');
-            if (item.getAttribute('href') === '#' + currentId) item.classList.add('active');
-          });
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
-    if (tocItems.length > 0) tocItems[0].classList.add('active');
-  })();
-</script>
-
 </body>
 </html>

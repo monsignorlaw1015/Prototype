@@ -1,6 +1,6 @@
 interface:
   display_name: "高保真原型"
-  short_description: "把已有 PRD 转成可编辑、可验收的高保真 HTML 原型"
+  short_description: "把已有 PRD 转成可编辑、可验收的桌面或移动端 HTML 原型"
   default_prompt: "Use $high-fidelity-prototype to turn my PRD Markdown into a review-ready HTML prototype."
 
 policy:

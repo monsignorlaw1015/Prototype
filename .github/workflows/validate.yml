@@ -17,8 +17,10 @@ jobs:
       - name: Validate skill metadata
         run: python3 scripts/quick-validate.py
       - name: Inject assets
-        run: ./assets/inject-assets.mjs ./assets/example.html
+        run: ./assets/inject-assets.mjs ./assets/example.html ./assets/example-mobile.html
       - name: Validate editor in Chrome
-        run: ./scripts/validate-editor.mjs ./assets/example.html
+        run: |
+          ./scripts/validate-editor.mjs ./assets/example.html
+          ./scripts/validate-editor.mjs ./assets/example-mobile.html
       - name: Verify clean generated example
-        run: git diff --exit-code -- assets/example.html
+        run: git diff --exit-code -- assets/example.html assets/example-mobile.html

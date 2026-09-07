@@ -1,20 +1,27 @@
 ---
 name: high-fidelity-prototype
-description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 HTML 原型，包含页面索引、逐页功能说明、流程图、可编辑文案和浏览器验收。仅在用户提供 PRD 文件时使用；不根据一句构思凭空定义需求。
+description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端或移动端 HTML 原型，包含页面索引、逐页功能说明、流程图、可编辑文案和浏览器验收。仅在用户提供 PRD 文件时使用；不根据一句构思凭空定义需求。
 ---
 
-# proto-gen — 高保真原型生成
+# Prototype — 高保真原型生成
 
-本 skill 将已有 PRD 转译为统一风格的高保真 HTML 原型，适合 Web/桌面应用产品 MVP 阶段的方案演示与评审。它不负责凭空定义需求：**PRD Markdown 是必需输入和业务事实来源**。
+本 skill 将已有 PRD 转译为统一风格的高保真 HTML 原型，适合桌面端 Web、移动端 App/H5 产品的方案演示与评审。它不负责凭空定义需求：**PRD Markdown 是必需输入和业务事实来源**。
 
 ## 设备系列
 
 | 系列 | 状态 | 外壳容器 | 适用 reference |
 |---|---|---|---|
-| **PC · macOS** | ✅ 当前覆盖 | `macos-window` / `macos-titlebar` / `macos-body` + `app-sidebar` / `win-chrome-bar` / `app-main` | 现有 `references/*.md` 全部 |
-| **Mobile** | 🚧 规划中 | 拟用 `mobile-frame` / `mobile-statusbar` / `mobile-tabbar`（待落地） | 后续以独立文件扩展（如 `references/html-structure-mobile.md`），不混入现有 |
+| **Desktop** | ✅ | `.prototype-viewport.macos-window[data-device="desktop"]` | `html-structure.md`、`css-components.md` |
+| **Mobile** | ✅ V1 | `.prototype-viewport.mobile-frame[data-device="mobile"]` | `html-structure-mobile.md`、`css-components-mobile.md` |
 
-> 当前所有原型骨架与组件描述均基于 PC · macOS 系列。引入 Mobile 系列时，**新增独立 reference 文件**而不是覆写现有，避免设备形态混淆。
+Mobile V1 使用 390×844 通用 App/H5 画布，不模拟小程序、iOS 原生或 Android Material 专属规范。
+
+### 设备路由（MANDATORY）
+
+1. PRD 明确写 PC、后台、桌面端或 Web 管理端：生成 Desktop。
+2. PRD 明确写 App、H5、移动端或小程序：生成 Mobile；小程序只使用通用移动端视觉，不冒充平台原生规范。
+3. PRD 同时包含两端：分别生成 `{name}-desktop.html` 与 `{name}-mobile.html`，不得在一个产品视口里混画。
+4. PRD 未说明设备且无法从页面对象确定：先询问用户，不得默认选择 Desktop。
 
 ## 三段结构契约
 
@@ -24,7 +31,7 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 .proto-layout (灰底桌面，flex 横排，gap 24)
 ┌──────────────┬──────────────────────────────┬──────────────────┐
 │              │                              │                  │
-│ toc-sidebar  │   原型图(macos-window)       │  功能概览        │
+│ toc-sidebar  │   原型图(prototype-viewport) │  功能概览        │
 │ 280px sticky │   1460×910（macOS 桌面感）   │  prd-panel       │
 │ 卡片         │                              │  360px sticky    │
 │ (全文件共享) │   ←──── 一一对应 ────→       │  卡片            │
@@ -34,7 +41,7 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
                      │
                      └─ 每个 .proto-stack = section-label + .proto-with-prd
                                                           │
-                                                          └─ macos-window + prd-panel
+                                                          └─ prototype-viewport + prd-panel
 ```
 
 **布局规范**（实施于 `assets/shared.css`，原型 HTML 不应覆写）：
@@ -43,9 +50,10 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 |---|---|---|
 | body 背景 | `oklch(0.92 0.005 280)` | macOS 桌面浅灰，让白色窗口悬浮其上 |
 | body padding | `32px 24px` | 整体外边距 |
-| macos-window 尺寸 | **1460×910** | 对齐 PC macOS 应用常见窗口大小（参 `references/shadcn-tweakcn-theme.md`） |
+| Desktop 视口 | **1460×910** | 使用 `.macos-window` |
+| Mobile 视口 | **390×844** | 使用 `.mobile-frame` |
 | toc-sidebar 宽度 | **280px** | sticky top:32px，独立卡片样式 |
-| prd-panel 宽度 | **360px** | sticky top:32px，与 macos-window 同高（910px） |
+| prd-panel 宽度 | **360px** | sticky top:32px，高度跟随当前设备视口 |
 | 列间距 | `24px` | toc / 原型 / prd 三者之间 |
 
 约束：
@@ -61,14 +69,16 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 本 skill 自带一套**主题可插拔**的设计系统：
 
 - `assets/theme.css` — **主题 token 单一来源**（19 个 shadcn 核心 + 8 个 sidebar 子 token + 12 个状态色派生 + 字体 CDN）。默认 = tweakcn 724-1，可通过 `extract-theme.sh` 切换
-- `assets/shared.css` — 组件类骨架（按钮 / 卡片 / 弹窗 / 表单 / PRD 面板等）；所有颜色 / 字体 / 圆角通过 `var()` 引用 `theme.css` 的 token
+- `assets/shared.css` — 通用组件与 Desktop 骨架
+- `assets/mobile.css` — Mobile 外壳、导航、列表、Bottom Sheet 与安全区组件
 - `assets/components.html` — **人类可视组件清单**（核心交付物）：每个组件含 类名 / 常态 / hover / 禁用 / loading 四态横排 + 应用场景 + Token 速查；产品 / 测试 / AI 浏览器双击查阅
 - `assets/extract-theme.sh` — 主题切换脚本：`./extract-theme.sh <tweakcn-url-or-id>` 一键覆盖 `theme.css`
 - `assets/inject-assets.mjs` — **资产注入脚本**：把主题、组件、联动和文案编辑运行时注入原型 HTML，产出仍是自包含单文件
 - `assets/prd-highlight.js` — PRD ↔ 原型 双向 hover 联动运行时
 - `assets/prototype-editor.js` — 项目无关的文案编辑运行时：显式 key 优先 + 产品界面与右侧功能说明自动绑定、页面内编辑、自动暂存、恢复初稿、导出无编辑工具的评审版
 - `scripts/validate-editor.mjs` — 文案编辑机械验收：启动隔离 Chrome，逐页检查覆盖率和误绑定，并实际修改普通页/弹窗/抽屉后刷新验证持久化
-- `assets/example.html` — 最小可运行示例
+- `assets/example.html` — Desktop 最小示例
+- `assets/example-mobile.html` — Mobile 页面与 Bottom Sheet 示例
 
 > **想换主题**：跑 `./extract-theme.sh <new-tweakcn-url>` 覆盖 `theme.css`，再跑一次注入脚本刷新所有原型。
 > **想查组件视觉规范**：浏览器打开 `components.html`，左侧 TOC 跳转，点类名复制。
@@ -86,6 +96,9 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 <!-- @proto-gen:shared:start -->
 <style>/* 脚本注入 shared.css，勿手改 */</style>
 <!-- @proto-gen:shared:end -->
+<!-- @proto-gen:mobile:start -->
+<style>/* Mobile 原型注入 mobile.css；Desktop 删除本块 */</style>
+<!-- @proto-gen:mobile:end -->
 <!-- @proto-gen:highlight:start -->
 <script>/* 脚本注入 prd-highlight.js，勿手改 */</script>
 <!-- @proto-gen:highlight:end -->
@@ -95,7 +108,7 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 <style>/* 页面自有样式写在标记块之外，注入不会碰 */</style>
 ```
 
-支持的块：`theme`、`shared`、`highlight`、`editor`。`theme` 与 `editor` 必备，其他按需；每个标记对全文件只允许出现一次。
+支持的块：`theme`、`shared`、`mobile`、`highlight`、`editor`。`theme` 与 `editor` 必备；Mobile 必须包含 `mobile`，Desktop 不包含；每个标记对全文件只允许出现一次。
 
 **注入 / 批量刷新**（同一命令，参数可混填文件与目录，目录递归收集 `*.html`）：
 
@@ -115,6 +128,8 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 |---|---|---|
 | `references/html-structure.md` | 页面骨架 + 三种叠加态（modal / drawer / subpage） | PC · macOS 系列 |
 | `references/css-components.md` | **类名 → 用途 → components.html 锚点** 索引表；不再含 hex / px 等具体值 | PC · macOS 系列 |
+| `references/html-structure-mobile.md` | Mobile 画布、页面层级、Bottom Sheet 与安全区约束 | Mobile |
+| `references/css-components-mobile.md` | Mobile 类名与场景索引 | Mobile |
 | `references/default-theme.md` | proto-gen 默认主题（724-1）说明 + 切换流程 + token 全表 + 切换后必须手工补的 3 项 | 设备无关 |
 | `references/shadcn-tweakcn-theme.md` | **目标项目接入**：当原型要对齐业务项目自身主题时如何覆盖 `theme.css`（sidebar 子 token 陷阱 / 状态色派生 / 字体大小映射 / lucide 踩坑 / 自检清单） | 设备无关；项目接入场景 |
 | `references/prd-rules.md` | PRD bullets 写法、元素描述模板、重复内容引用规则 | 设备无关 |
@@ -134,13 +149,14 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 **分析出**：
 
 - 页面/功能名称（用于文件名和标题）
+- 目标设备；按“设备路由”判定，信息不足时先问
 - 包含哪些 section（每个 section = 一个原型状态，如主页 / 弹窗 / 抽屉）
 - 每个 section 的页面类型（主页 / 详情页 / 弹窗叠加态 / 抽屉叠加态）
 - 已定义的核心流程、判断分支和状态机；它们必须来自 PRD，不得补造业务规则
 
 ### 2. 规划 sections
 
-每个页面 section 对应一个 `macos-window` + `prd-panel`，分配：
+每个页面 section 对应一个 `.prototype-viewport` + `prd-panel`。Desktop 加 `.macos-window[data-device="desktop"]`；Mobile 加 `.mobile-frame[data-device="mobile"]`。
 
 - `section-id`（kebab-case，如 `section-home`、`section-home-add`）
 - `section-label`（如 `Home-01`、`Home-02`）
@@ -150,18 +166,20 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 
 ### 3. 为每个 section 构建 UI
 
-参考 `references/css-components.md` 选择合适的 CSS 组件，不要随意 inline 替代或自造未列出的类名。
+Desktop 读取 `references/html-structure.md` 与 `references/css-components.md`；Mobile 读取两个 `*-mobile.md`，基础组件继续复用 `shared.css`。
 
 **UI 构建原则**：
 
 - 使用真实示例数据，不用 `Lorem ipsum` 或空占位
-- `app-sidebar` 和 `win-chrome-bar` 是所有主页 section 的标配
+- Desktop 主页使用 `app-sidebar` 和 `win-chrome-bar`
+- Mobile 禁止使用 desktop sidebar、宽表格、依赖 hover 的操作和密集多列布局
+- Mobile 一级页面按 PRD 使用 `mobile-tabbar`；二级页使用返回导航；选择/筛选优先使用 `mobile-sheet`
 - 弹窗叠加态：在主内容上 `position:absolute; inset:0; z-index` 加遮罩 + `.form-dialog` + `.modal-close-x`
 - 抽屉叠加态：在主内容上加遮罩 + 右侧抽屉面板
 - 详情页：左上角加 `← 返回 {上级页面}` 链接
-- 需要跨页/跨状态同步的关键文案必须显式绑定唯一且稳定的 `data-proto-edit="<key>"`；同一文案在多处出现时复用同一个 key。其他未显式绑定的 `.macos-window` 内可见文案由编辑运行时自动生成稳定路径 key 兜底；不得因有自动兜底就省略跨页同步文案的显式 key
+- 需要跨页/跨状态同步的关键文案必须显式绑定唯一且稳定的 `data-proto-edit="<key>"`；同一文案在多处出现时复用同一个 key。其他未显式绑定的 `.prototype-viewport` 内可见文案由编辑运行时自动生成稳定路径 key 兜底；不得因有自动兜底就省略跨页同步文案的显式 key
 - 输入框占位、tooltip、`aria-label` 等属性文案同时添加 `data-proto-edit-attr="placeholder|title|aria-label"`。图标、纯装饰、PRD 逻辑说明和布局结构不绑定编辑键
-- 自动绑定范围包含产品页面外壳与对应 `.prd-panel` 功能说明；流程图、原型 TOC / section label 和编辑器自身 UI 保持只读
+- 自动绑定范围包含 `.prototype-viewport`（兼容旧 `.macos-window` / `.mobile-frame`）与对应 `.prd-panel` 功能说明；流程图、原型 TOC / section label 和编辑器自身 UI 保持只读
 
 ### 4. 为每个 section 写功能概览
 
@@ -176,7 +194,7 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 
 ### 5. 组装 HTML
 
-参考 `references/html-structure.md` 的页面骨架模板，按顺序填入各 section。
+按设备读取对应的 `html-structure*.md` 页面骨架模板，按顺序填入各 section。
 
 `<head>` 内**必须带注入标记块**（包含 `editor`），页面自有样式写在标记块之外。写入用户指定目录下的 `{filename}.html` 后，跑一次注入脚本回填资产：
 
@@ -192,7 +210,8 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 
 ## 输出文件
 
-- **HTML 原型**：`{user-dir}/{name}.html`（包含全部 sections，自包含单文件，token / 通用组件样式由注入脚本回填）
+- **单设备 PRD**：`{user-dir}/{name}.html`
+- **同时包含两端的 PRD**：`{user-dir}/{name}-desktop.html` 与 `{user-dir}/{name}-mobile.html`
 
 ## 验证
 
@@ -202,8 +221,8 @@ description: 基于已有 PRD Markdown 生成高保真、可评审的桌面端 H
 2. 各 section 都有 `toc-sidebar` 对应入口
 3. `prd-panel` 的关键操作、状态和边界与输入 PRD 一致；不编造 PRD 未定义的规则
 4. 输入 PRD 有流程或状态机时，HTML 顶部有 `F-01 流程总览`，且关键页面节点可跳转到对应 section
-5. 没有使用 `references/css-components.md` 中未列出的自造类名
-6. 必须运行 `scripts/validate-editor.mjs`；它逐个 section 检查 `[data-proto-edit]` 覆盖，任何含 `.macos-window` 的页面为 0 即失败
+5. 没有使用当前设备 reference 中未列出的自造类名，也没有混用另一设备的外壳组件
+6. 必须运行 `scripts/validate-editor.mjs`；它逐个 Desktop/Mobile section 检查 `[data-proto-edit]` 覆盖
 7. 验收脚本必须真实执行普通页与页面中实际存在的弹窗/抽屉编辑：修改 → 触发 input 保存 → 刷新恢复；不能只检查虚线边框或静态属性
 8. 验收脚本必须逐页检查 `.prd-panel` 存在可编辑绑定，并真实修改功能说明后验证刷新恢复；同时反向检查 `.toc-sidebar`、`.flow-overview` 内的 `[data-proto-edit-auto]` 均为 0
 9. 导出的评审版保留修改结果，且不包含编辑工具和编辑态属性
