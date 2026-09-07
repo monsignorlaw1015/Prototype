@@ -42,14 +42,14 @@ const wait = ms => new Promise(resolveWait => setTimeout(resolveWait, ms));
 
 const port = await freePort();
 const profileDir = mkdtempSync(join(tmpdir(), 'proto-editor-qa-'));
-const chromeArgs = ['--headless=new', '--disable-gpu', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, 'about:blank'];
+const chromeArgs = ['--headless=new', '--disable-gpu', '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, 'about:blank'];
 if (process.platform === 'linux') chromeArgs.splice(2, 0, '--no-sandbox', '--disable-dev-shm-usage');
 const chrome = spawn(chromePath, chromeArgs, { stdio: 'ignore' });
 let ws;
 
 try {
   let page;
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 160; i++) {
     try {
       const targets = await fetch(`http://127.0.0.1:${port}/json`).then(response => response.json());
       page = targets.find(target => target.type === 'page');
