@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Private project templates: keep locally, never publish.
+assets/projects/

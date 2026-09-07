@@ -1,0 +1,24 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  skill-and-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check environment
+        run: ./scripts/check-env.mjs
+      - name: Validate skill metadata
+        run: python3 scripts/quick-validate.py
+      - name: Inject assets
+        run: ./assets/inject-assets.mjs ./assets/example.html
+      - name: Validate editor in Chrome
+        run: ./scripts/validate-editor.mjs ./assets/example.html
+      - name: Verify clean generated example
+        run: git diff --exit-code -- assets/example.html

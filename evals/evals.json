@@ -1,0 +1,23 @@
+{
+  "skill_name": "high-fidelity-prototype",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "使用 $high-fidelity-prototype，根据 fixtures/task-management-prd.md 生成原型，保存到 prototypes/task-management.html。",
+      "expected_output": "读取 PRD 后生成自包含 HTML；页面状态、流程、功能说明和边界均来自 PRD；资产注入和浏览器验收通过。",
+      "files": ["fixtures/task-management-prd.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "使用 $high-fidelity-prototype，把 docs/plugin-management-prd.md 转成可评审原型，输出到 prototypes/plugin-management.html。",
+      "expected_output": "按 PRD 生成列表、弹窗和抽屉状态；每个状态只有一个对应功能说明；文案编辑与刷新持久化验收通过。",
+      "files": ["docs/plugin-management-prd.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "使用 $high-fidelity-prototype 做一个通知偏好设置原型。",
+      "expected_output": "因未提供 PRD Markdown 路径而停止生成，并明确要求用户提供 PRD；不得自行补造页面和业务规则。",
+      "files": []
+    }
+  ]
+}
