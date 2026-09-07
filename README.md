@@ -4,7 +4,13 @@
 
 它不是根据一句想法自由发挥的 UI 生成器。PRD 是唯一业务事实来源；Skill 负责把已确认的页面、状态、流程和边界转译成原型，不擅自补造规则。
 
-![示例截图](assets/screenshots/example-home.png)
+### Desktop 示例
+
+![Desktop 原型示例](assets/screenshots/example-home.png)
+
+### Mobile 示例
+
+![Mobile 原型示例](assets/screenshots/example-mobile.png)
 
 ## 核心能力
 
