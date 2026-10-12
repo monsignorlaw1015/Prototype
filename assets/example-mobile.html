@@ -925,6 +925,23 @@ li[data-target].is-highlight {
 }
 .channel-card.is-bullet-active { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent); }
 .channel-card.is-bullet-active .channel-actions { display: flex; }
+
+/* 评审标注：固定红框仅用于指出本期改动，不属于产品设计系统 */
+.prototype-viewport { --proto-change-red: oklch(0.65 0.23 25); }
+.prototype-viewport .proto-change-mark {
+  outline: 3px solid var(--proto-change-red);
+  outline-offset: 2px;
+}
+.prototype-viewport table .proto-change-col {
+  border-left: 3px solid var(--proto-change-red) !important;
+  border-right: 3px solid var(--proto-change-red) !important;
+}
+.prototype-viewport table thead .proto-change-col {
+  border-top: 3px solid var(--proto-change-red) !important;
+}
+.prototype-viewport table tbody tr:last-child .proto-change-col {
+  border-bottom: 3px solid var(--proto-change-red) !important;
+}
 </style>
 <!-- @proto-gen:shared:end -->
 <!-- @proto-gen:mobile:start -->
