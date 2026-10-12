@@ -16,5 +16,7 @@
 | 遮罩与底部面板 | `.mobile-overlay` / `.mobile-sheet` / `.mobile-sheet__handle` |
 | 短反馈 | `.mobile-toast` |
 | 空状态 | `.mobile-empty` / `.mobile-empty__title` / `.mobile-empty__desc` |
+| 改动控件/模块红框 | `.proto-change-mark`（评审标注） |
+| 改动表格列红框 | `.proto-change-col`（仅移动端确实存在表格时） |
 
 按钮、Badge、输入框、开关等基础原语继续复用 `shared.css`。移动端需要不同尺寸时，用移动端容器后代选择器扩展，不复制颜色 token 或另造主题。

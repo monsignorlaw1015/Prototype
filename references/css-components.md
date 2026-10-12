@@ -58,6 +58,9 @@
 | 面板标题 | `.prd-panel__title` | [`#comp-prd-panel`](../assets/components.html#comp-prd-panel) | 「功能概览」标题 |
 | 面板正文 | `.prd-panel__body` | [`#comp-prd-panel`](../assets/components.html#comp-prd-panel) | 滚动容器 |
 | 分组 | `.prd-section` + `.prd-section__title` | [`#comp-prd-panel`](../assets/components.html#comp-prd-panel) | 一段功能描述 |
+| **评审标注** |  |  |  |
+| 改动控件/模块红框 | `.proto-change-mark` | — | 圈住本期新增或修改的具体区域；评审标注，不是产品样式 |
+| 改动表格列红框 | `.proto-change-col` | — | 同列的表头与全部单元格均添加，形成连续红框 |
 
 ## 业务衍生类（**不**在 `components.html` 展示）
 

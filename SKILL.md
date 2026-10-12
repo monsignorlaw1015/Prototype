@@ -152,6 +152,7 @@ Mobile V1 使用 390×844 通用 App/H5 画布，不模拟小程序、iOS 原生
 - 目标设备；按“设备路由”判定，信息不足时先问
 - 包含哪些 section（每个 section = 一个原型状态，如主页 / 弹窗 / 抽屉）
 - 每个 section 的页面类型（主页 / 详情页 / 弹窗叠加态 / 抽屉叠加态）
+- 每个 section 的改动清单：对照上线页面/用户截图与 PRD，逐项列出新增、改名、删除或交互变化的可见位置；没有上线截图时按已知旧版页面与 PRD 对照
 - 已定义的核心流程、判断分支和状态机；它们必须来自 PRD，不得补造业务规则
 
 ### 2. 规划 sections
@@ -181,7 +182,17 @@ Desktop 读取 `references/html-structure.md` 与 `references/css-components.md`
 - 输入框占位、tooltip、`aria-label` 等属性文案同时添加 `data-proto-edit-attr="placeholder|title|aria-label"`。图标、纯装饰、PRD 逻辑说明和布局结构不绑定编辑键
 - 自动绑定范围包含 `.prototype-viewport`（兼容旧 `.macos-window` / `.mobile-frame`）与对应 `.prd-panel` 功能说明；流程图、原型 TOC / section label 和编辑器自身 UI 保持只读
 
-### 4. 为每个 section 写功能概览
+### 4. 标注每页改动（MANDATORY）
+
+评审者必须直接在原型图里看出本期改了哪里。对每个有改动的 section，依据第 1 步的改动清单，用**常驻红色实线框**逐处圈住变化的控件、字段、表格列或新增模块；不要只依赖右侧功能概览、hover 高亮或文字说明。
+
+- 普通控件/模块加 `.proto-change-mark`。表格中某一列改名时，对该列表头和每个受影响的单元格加 `.proto-change-col`，形成连续的整列红框；筛选项、下拉选项和列表值分别标注。
+- 红框紧贴实际变化区域。一个页面有多处变化，就分别圈出；不要用一个大框圈整个页面、整张表或无关旧内容。删除项无法在新页面直接圈出时，圈出承接删除后操作的区域，并在功能概览写明删除内容。
+- 标注属于**原型评审层**，不代表上线产品视觉；不要改变上线页面原有配色和组件风格。流程图、目录、右侧 PRD 说明和纯参考页面不加红框。
+- 每个有改动的 section 首屏应看得到至少一个红框；改动在长页下方时，增加滚动到该处的独立状态，避免评审者查找。保存为 HTML 后检查红框没有被弹窗遮罩、滚动容器或裁切隐藏。
+- 使用 `assets/shared.css` 提供的通用标注类。若项目已有明确的红框样式，以项目样式为准，但仍须满足常驻、醒目和逐处对应。
+
+### 5. 为每个 section 写功能概览
 
 先读 `references/prototype-logic.md`，再遵循 `references/prd-rules.md`。功能概览必须同时保留「组件与交互」和「逻辑说明」：
 
@@ -192,7 +203,7 @@ Desktop 读取 `references/html-structure.md` 与 `references/css-components.md`
 - **重复内容处理**：第一个 section 完整描述；后续 section 对相同通用结构用引用，只描述差异；业务逻辑不能因外壳复用而省略
 - **顺手绑定 highlight**：按 `references/prd-highlight.md` 给 bullet 加 `data-target="<key>"`、给原型组件加 `data-comp="<key>"`，开启 PRD ↔ 原型 双向 hover 联动
 
-### 5. 组装 HTML
+### 6. 组装 HTML
 
 按设备读取对应的 `html-structure*.md` 页面骨架模板，按顺序填入各 section。
 
@@ -226,3 +237,4 @@ Desktop 读取 `references/html-structure.md` 与 `references/css-components.md`
 7. 验收脚本必须真实执行普通页与页面中实际存在的弹窗/抽屉编辑：修改 → 触发 input 保存 → 刷新恢复；不能只检查虚线边框或静态属性
 8. 验收脚本必须逐页检查 `.prd-panel` 存在可编辑绑定，并真实修改功能说明后验证刷新恢复；同时反向检查 `.toc-sidebar`、`.flow-overview` 内的 `[data-proto-edit-auto]` 均为 0
 9. 导出的评审版保留修改结果，且不包含编辑工具和编辑态属性
+10. 逐页浏览器验收：每个有改动的 section 至少一个可见红框；对照改动清单逐项确认红框圈中正确元素，表格列从表头覆盖至最后一行；删除项的承接位置和说明可定位；无关旧内容不被误圈
