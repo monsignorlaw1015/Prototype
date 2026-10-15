@@ -76,7 +76,7 @@ Mobile V1 使用 390×844 通用 App/H5 画布，不模拟小程序、iOS 原生
 - `assets/inject-assets.mjs` — **资产注入脚本**：把主题、组件、联动和文案编辑运行时注入原型 HTML，产出仍是自包含单文件
 - `assets/prd-highlight.js` — PRD ↔ 原型 双向 hover 联动运行时
 - `assets/prototype-editor.js` — 项目无关的文案编辑运行时：显式 key 优先 + 产品界面与右侧功能说明自动绑定、页面内编辑、自动暂存、恢复初稿、导出无编辑工具的评审版
-- `scripts/validate-editor.mjs` — 文案编辑机械验收：启动隔离 Chrome，逐页检查覆盖率和误绑定，并实际修改普通页/弹窗/抽屉后刷新验证持久化
+- `scripts/validate-editor.mjs` — 文案编辑机械验收：启动隔离 Chrome，逐页修改普通页与功能说明文案，抽测该页存在的弹窗/抽屉/底部弹层，刷新验证持久化，并检查导出评审版
 - `assets/example.html` — Desktop 最小示例
 - `assets/example-mobile.html` — Mobile 页面与 Bottom Sheet 示例
 
@@ -155,6 +155,8 @@ Mobile V1 使用 390×844 通用 App/H5 画布，不模拟小程序、iOS 原生
 - 每个 section 的改动清单：对照上线页面/用户截图与 PRD，逐项列出新增、改名、删除或交互变化的可见位置；没有上线截图时按已知旧版页面与 PRD 对照
 - 已定义的核心流程、判断分支和状态机；它们必须来自 PRD，不得补造业务规则
 
+动笔前列一张**本次任务内部使用的简表**，每行只记录「现有页面/位置 → 本期可见改动 → 依据（PRD 章节、现有页面或截图）→ 对应 section」。PRD 决定业务规则，现有页面/截图决定已有界面；两者冲突或缺证据时标出待确认点，不把推测画成确定功能。只记录影响本期原型的项，不扩写成第二份 PRD；缺少完整项目母版不阻断生成。
+
 ### 2. 规划 sections
 
 每个页面 section 对应一个 `.prototype-viewport` + `prd-panel`。Desktop 加 `.macos-window[data-device="desktop"]`；Mobile 加 `.mobile-frame[data-device="mobile"]`。
@@ -162,6 +164,8 @@ Mobile V1 使用 390×844 通用 App/H5 画布，不模拟小程序、iOS 原生
 - `section-id`（kebab-case，如 `section-home`、`section-home-add`）
 - `section-label`（如 `Home-01`、`Home-02`）
 - `toc` 显示名（如 `Home-01`）
+
+**先定评审差异，再定页面数**：一个 section 展示一种需要单独判断的可见状态或关键操作结果。新增状态若只重复同一规则、同一界面和同一结论，合并到已有 section 的功能概览；会改变用户操作、权限、系统反馈或异常处理的状态应保留。不要为覆盖 PRD 每一条文字机械拆页，也不要为压页数合并会影响决策的分支。定稿前回看第 1 步简表：每项本期改动都能定位到某个 section，且每个 section 都有明确评审价值。
 
 > 默认不拆分文件，所有 section 放在一个 HTML 中，垂直堆叠。若 PRD 有核心用户流程或状态机，在第一个页面前增加 `F-01 流程总览`：它是独立图表区，不套设备外壳；流程节点须链接到对应页面 section，流程中没有对应页面的系统步骤仅展示为只读节点。
 
@@ -234,7 +238,7 @@ Desktop 读取 `references/html-structure.md` 与 `references/css-components.md`
 4. 输入 PRD 有流程或状态机时，HTML 顶部有 `F-01 流程总览`，且关键页面节点可跳转到对应 section
 5. 没有使用当前设备 reference 中未列出的自造类名，也没有混用另一设备的外壳组件
 6. 必须运行 `scripts/validate-editor.mjs`；它逐个 Desktop/Mobile section 检查 `[data-proto-edit]` 覆盖
-7. 验收脚本必须真实执行普通页与页面中实际存在的弹窗/抽屉编辑：修改 → 触发 input 保存 → 刷新恢复；不能只检查虚线边框或静态属性
-8. 验收脚本必须逐页检查 `.prd-panel` 存在可编辑绑定，并真实修改功能说明后验证刷新恢复；同时反向检查 `.toc-sidebar`、`.flow-overview` 内的 `[data-proto-edit-auto]` 均为 0
-9. 导出的评审版保留修改结果，且不包含编辑工具和编辑态属性
+7. 验收脚本逐个 section 修改一个普通界面文案及一个 `.prd-panel` 文案；该 section 实际存在弹窗、抽屉或底部弹层时各抽测一个，触发保存并刷新验证。无此状态时不要求虚构状态供测试
+8. 验收脚本反向检查 `.toc-sidebar`、`.flow-overview` 内的 `[data-proto-edit-auto]` 均为 0；文案测试通过只证明被抽测绑定的持久化，不代表全部业务交互正确
+9. 验收脚本实际执行导出，并检查导出 HTML 保留本次修改且不包含编辑工具、运行时和编辑态属性
 10. 逐页浏览器验收：每个有改动的 section 至少一个可见红框；对照改动清单逐项确认红框圈中正确元素，表格列从表头覆盖至最后一行；删除项的承接位置和说明可定位；无关旧内容不被误圈

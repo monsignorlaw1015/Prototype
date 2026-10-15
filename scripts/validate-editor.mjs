@@ -116,43 +116,97 @@ try {
   if (audit.sections.length === 0) failures.push('未发现包含产品视口的 section');
   if (failures.length) throw new Error(failures.join('；'));
 
-  const editTargets = await evaluate(`(() => {
+  const collectPlan = () => {
     document.querySelector('.proto-editor-launcher').click();
-    const selectors = {
-      normal: '.prototype-viewport [data-proto-edit]:not(.form-dialog [data-proto-edit]):not(.env-drawer [data-proto-edit]):not(.mobile-sheet [data-proto-edit]):not([role="dialog"] [data-proto-edit]), .macos-window [data-proto-edit]:not(.form-dialog [data-proto-edit]):not(.env-drawer [data-proto-edit]):not([role="dialog"] [data-proto-edit]), .mobile-frame [data-proto-edit]:not(.mobile-sheet [data-proto-edit]):not([role="dialog"] [data-proto-edit])',
-      prd: '.prd-panel [data-proto-edit]',
-      modal: '.form-dialog [data-proto-edit], [role="dialog"]:not(.mobile-sheet) [data-proto-edit]',
-      drawer: '.env-drawer [data-proto-edit], .drawer-panel [data-proto-edit]',
-      sheet: '.mobile-sheet [data-proto-edit]'
-    };
-    return Object.fromEntries(Object.entries(selectors).map(([type, selector]) => {
-      const el = document.querySelector(selector);
-      if (!el) return [type, null];
-      const marker = 'proto-editor-regression-' + type;
+    const plan = [];
+    const markers = new Map();
+    const add = (section, type, el) => {
+      if (!el) return;
+      const key = el.dataset.protoEdit;
+      if (!markers.has(key)) markers.set(key, 'proto-editor-regression-' + markers.size);
+      const marker = markers.get(key);
       el.textContent = marker;
       el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
-      return [type, { key: el.dataset.protoEdit, marker }];
-    }));
-  })()`);
-  if (!editTargets.normal) throw new Error('未找到普通页面可编辑文案');
-  if (!editTargets.prd) throw new Error('未找到功能说明可编辑文案');
+      plan.push({ section: section.id, type, key, marker });
+    };
+    const firstText = (section, selector) =>
+      [...section.querySelectorAll(selector)].find(el => !el.dataset.protoEditAttr);
+    for (const section of [...document.querySelectorAll('[id^="section-"]')].filter(el => el.querySelector('.prototype-viewport, .macos-window, .mobile-frame'))) {
+      const root = section.querySelector('.prototype-viewport, .macos-window, .mobile-frame');
+      const overlays = {};
+      for (const el of root.querySelectorAll('*')) {
+        const classes = [...el.classList].join(' ');
+        const type = /(^|[-_ ])drawer($|[-_ ])/i.test(classes) ? 'drawer'
+          : /(^|[-_ ])sheet($|[-_ ])/i.test(classes) ? 'sheet'
+            : /(^|[-_ ])(modal|dialog)($|[-_ ])/i.test(classes) || el.getAttribute('role') === 'dialog' ? 'modal' : null;
+        if (type && !overlays[type] && el.querySelector('[data-proto-edit]:not([data-proto-edit-attr])')) overlays[type] = el;
+      }
+      const normal = [...root.querySelectorAll('[data-proto-edit]:not([data-proto-edit-attr])')].find(el =>
+        !Object.values(overlays).some(overlay => overlay.contains(el))
+      );
+      add(section, 'normal', normal);
+      add(section, 'prd', firstText(section, '.prd-panel [data-proto-edit]'));
+      for (const [type, overlay] of Object.entries(overlays)) {
+        add(section, type, firstText(overlay, '[data-proto-edit]'));
+      }
+    }
+    return plan;
+  };
+  const editPlan = await evaluate('(' + collectPlan.toString() + ')()');
+  for (const section of audit.sections) {
+    for (const type of ['normal', 'prd']) {
+      if (!editPlan.some(item => item.section === section.id && item.type === type)) {
+        failures.push(section.id + ' 缺少可测试的' + (type === 'normal' ? '普通页面' : '功能说明') + '文案');
+      }
+    }
+  }
+  if (failures.length) throw new Error(failures.join('；'));
 
   await send('Page.reload', { ignoreCache: true });
   for (let i = 0; i < 40; i++) {
-    if (await evaluate(`!!document.querySelector('.proto-editor-launcher')`)) break;
+    if (await evaluate("!!document.querySelector('.proto-editor-launcher')")) break;
     await wait(125);
   }
-  const persisted = await evaluate(`(() => {
-    const targets = ${JSON.stringify(editTargets)};
-    return Object.fromEntries(Object.entries(targets).map(([type, target]) => [type, !target || document.querySelector('[data-proto-edit="' + CSS.escape(target.key) + '"]')?.textContent === target.marker]));
-  })()`);
-  Object.entries(persisted).filter(([, passed]) => !passed).forEach(([type]) => failures.push(`${type} 文案刷新后未恢复`));
+  const checkPersisted = plan => plan.map(item => ({
+    section: item.section,
+    type: item.type,
+    passed: document.querySelector('#' + CSS.escape(item.section) + ' [data-proto-edit="' + CSS.escape(item.key) + '"]')?.textContent === item.marker
+  }));
+  const persisted = await evaluate('(' + checkPersisted.toString() + ')(' + JSON.stringify(editPlan) + ')');
+  persisted.filter(item => !item.passed).forEach(item => failures.push(item.section + ' ' + item.type + ' 文案刷新后未恢复'));
+  if (failures.length) throw new Error(failures.join('；'));
+
+  const checkExport = async plan => {
+    const createObjectURL = URL.createObjectURL;
+    let captured;
+    URL.createObjectURL = blob => { captured = blob; return createObjectURL.call(URL, blob); };
+    try {
+      document.querySelector('.proto-editor-launcher').click();
+      document.querySelector('.proto-editor-toolbar [data-action="export"]').click();
+      if (!captured) return { error: '未生成导出文件' };
+      const doc = new DOMParser().parseFromString(await captured.text(), 'text/html');
+      return {
+        missing: plan.filter(item => doc.querySelector('#' + CSS.escape(item.section) + ' [data-proto-edit="' + CSS.escape(item.key) + '"]')?.textContent !== item.marker).map(item => item.section + '/' + item.type),
+        tools: doc.querySelectorAll('[data-proto-editor-ui], [data-proto-editor-runtime], .proto-editor-launcher, .proto-editor-toolbar').length,
+        editAttributes: doc.querySelectorAll('[contenteditable], [spellcheck]').length,
+        active: doc.body.classList.contains('proto-editor-active')
+      };
+    } finally {
+      URL.createObjectURL = createObjectURL;
+    }
+  };
+  const exported = await evaluate('(' + checkExport.toString() + ')(' + JSON.stringify(editPlan) + ')');
+  if (exported.error) failures.push(exported.error);
+  if (exported.missing?.length) failures.push('导出文案丢失：' + exported.missing.join(', '));
+  if (exported.tools) failures.push('导出文件残留编辑工具或运行时');
+  if (exported.editAttributes || exported.active) failures.push('导出文件残留编辑态属性');
   if (failures.length) throw new Error(failures.join('；'));
 
   const totalBindings = audit.sections.reduce((sum, section) => sum + section.productBindings + section.prdBindings, 0);
   console.log(`✓ 文案编辑验收通过：${audit.sections.length} 个页面，${totalBindings} 个绑定`);
   audit.sections.forEach(section => console.log(`  ${section.id} [${section.device}]: 产品 ${section.productBindings}，功能说明 ${section.prdBindings}`));
-  console.log(`  交互回归：${Object.entries(editTargets).filter(([, target]) => target).map(([type]) => type).join(', ')}`);
+  const overlaysTested = editPlan.filter(item => !['normal', 'prd'].includes(item.type));
+  console.log(`  交互回归：逐页普通页与功能说明、${overlaysTested.length} 个叠加态，共 ${editPlan.length} 处；导出评审版通过`);
 } catch (error) {
   console.error(`✗ 文案编辑验收失败：${error.message}`);
   process.exitCode = 1;
