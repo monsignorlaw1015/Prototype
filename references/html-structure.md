@@ -71,11 +71,11 @@
   <!-- 原型纵列：每个 section 是一个 proto-stack -->
   <div class="sections-col">
 
-<!-- 若输入 PRD 有流程图或核心用户流程，在第一个页面 section 前加入。它不对应设备页面。 -->
+<!-- 按 diagram-rules.md 在首个页面前放置适用图示；每图有唯一 id、标题及 TOC 入口，不对应设备页面。 -->
 <div id="flow-overview" class="flow-stack">
   <div class="section-label">F-01 流程总览</div>
   <section class="flow-overview">
-    <!-- 用 SVG 绘制流程。页面节点用 <a href="#section-xxx"> 包裹；系统节点不跳转。 -->
+    <!-- 内联最终 SVG；按需重复此图表区以承载 T-xx 时序图、S-xx 状态图。页面节点用 <a href="#section-xxx"> 包裹，系统节点不跳转。 -->
   </section>
 </div>
 
